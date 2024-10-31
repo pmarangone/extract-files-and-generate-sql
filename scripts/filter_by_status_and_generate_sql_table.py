@@ -85,3 +85,5 @@ if __name__ == "__main__":
     from_df_to_sql()
 
     result = items_agrupados_por_dia_e_tipo()
+
+    print(result)
