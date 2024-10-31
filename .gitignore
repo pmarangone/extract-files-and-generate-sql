@@ -1,0 +1,5 @@
+dados.zip:Zone.Identifier
+dados/*
+.env
+__pycache__
+.venv
