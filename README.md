@@ -4,7 +4,7 @@
 Esta é uma aplicação API Flask que fornece endpoints para recuperar informações sobre diferentes tipos (tipos) de um arquivo CSV.
 
 #### Como configurar o ambiente:
-1. Clone o repositório: git clone  
+1. Clone o repositório: git clone `https://github.com/pmarangone/extract-files-and-generate-sql.git` 
 2. Crie um ambiente virtual (opcional, mas recomendado): 
    ```bash
    python -m venv venv
