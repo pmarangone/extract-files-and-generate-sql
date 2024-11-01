@@ -32,12 +32,27 @@ def read_file(origem_dados, tipos):
 
 def from_df_to_sql():
     df = read_file("../dados/origem-dados.csv", "../dados/tipos.csv")
-    df.to_sql(name="dados_finais", con=engine)
 
     with open("insert-dados.sql", "w") as file:
-        with engine.connect() as conn:
-            for line in conn.connection.iterdump():
-                file.write(f"{line}\n")
+        file.write(
+            """
+BEGIN TRANSACTION;
+CREATE TABLE dados_finais (
+    "index" BIGINT, 
+    created_at TEXT, 
+    product_code BIGINT, 
+    customer_code BIGINT, 
+    status TEXT, 
+    tipo BIGINT, 
+    nome_tipo TEXT
+);
+        """
+        )
+
+        for index, row in df.iterrows():
+            insert_statement = f"""
+INSERT INTO "dados_finais" VALUES({index},'{row.created_at}',{row.product_code},{row.customer_code},'{row.status}',{row.tipo},'{row.nome_tipo}');"""
+            file.write(insert_statement)
 
 
 def items_agrupados_por_dia_e_tipo():
@@ -54,8 +69,8 @@ def items_agrupados_por_dia_e_tipo():
                 dia, tipo;
         """
 
-    # Won't be used in the first time the script will run
-    # init_db()
+    # Load data into SQLite
+    init_db()
 
     with engine.connect() as connection:
         result = connection.execute(text(query))
