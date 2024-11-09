@@ -30,10 +30,11 @@ def read_file(origem_dados, tipos):
     return table_sorted
 
 
-def from_df_to_sql():
+def from_df_to_sql(lote):
     df = read_file("../dados/origem-dados.csv", "../dados/tipos.csv")
 
     with open("insert-dados.sql", "w") as file:
+        # Write header
         file.write(
             """
 BEGIN TRANSACTION;
@@ -49,10 +50,27 @@ CREATE TABLE dados_finais (
         """
         )
 
+        initial_statement = """
+INSERT INTO dados_finais VALUES"""
+        values_statement = ""
+        idx = 0
+
         for index, row in df.iterrows():
             insert_statement = f"""
-INSERT INTO "dados_finais" VALUES({index},'{row.created_at}',{row.product_code},{row.customer_code},'{row.status}',{row.tipo},'{row.nome_tipo}');"""
-            file.write(insert_statement)
+({index},'{row.created_at}',{row.product_code},{row.customer_code},'{row.status}',{row.tipo},'{row.nome_tipo}'),"""
+            if idx < lote:
+                values_statement += insert_statement
+                idx += 1
+            else:
+                values_statement = values_statement[:-1]
+                values_statement += ";\n"
+                file.write(initial_statement + values_statement)
+                idx = 1
+                values_statement = insert_statement
+
+        values_statement = values_statement[:-1]
+        values_statement += ";\n"
+        file.write(initial_statement + values_statement)
 
 
 def items_agrupados_por_dia_e_tipo():
@@ -97,7 +115,7 @@ if __name__ == "__main__":
 
     read_file("../dados/origem-dados.csv", "../dados/tipos.csv")
 
-    from_df_to_sql()
+    from_df_to_sql(10)
 
     result = items_agrupados_por_dia_e_tipo()
 
